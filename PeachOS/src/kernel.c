@@ -6,10 +6,11 @@
 #include "kernel.h"
 #include "io/io.h"
 #include "idt/idt.h"
+#include "memory/heap/kheap.h"
 
-uint16_t *video_mem = 0;
-uint16_t terminal_row =0;
-uint16_t terminal_col =0;
+uint16_t* video_mem = 0;
+uint16_t terminal_row = 0;
+uint16_t terminal_col = 0;
 
 
 uint16_t terminal_make_char(char c, char colour) {
@@ -46,7 +47,7 @@ void terminal_initialize(void) {
     }
 }
 
-size_t strlen(const char *str) {
+size_t strlen(const char* str) {
     size_t len = 0;
     while (str[len]) {
         len++;
@@ -65,6 +66,9 @@ void print(const char* str) {
 void kernel_main(void) {
     terminal_initialize();
     print("Hello world!\nSome test");
+
+    // initialize the heap
+    kheap_init();
 
     // initialize the interrupt descriptor table
     idt_init();
