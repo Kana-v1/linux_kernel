@@ -15,7 +15,7 @@ extern void int21h(void);
 extern void no_interrupt(void);
 
 void int21h_handler(void) {
-    print("Keyboard pressed\n");
+    print("\nKeyboard pressed\n");
     outb(0x20, 0x20);       // we're done handling this interrupt
 }
 
