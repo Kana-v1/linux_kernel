@@ -5,6 +5,7 @@
 #ifndef LINUX_KERNEL_PAGING_H
 #define LINUX_KERNEL_PAGING_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -33,5 +34,10 @@ void enable_paging(void);
 uint32_t* paging_4gb_chunk_get_directory(struct Paging4GbChunk* chunk);
 
 void paging_load_directory(uint32_t* directory);
+
+bool paging_is_aligned(void* addr);
+
+// val - physical address along with flags
+int paging_set(uint32_t* directory, void* virtual_address, uint32_t val);
 
 #endif //LINUX_KERNEL_PAGING_H
