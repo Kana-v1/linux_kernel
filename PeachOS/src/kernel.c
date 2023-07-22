@@ -73,6 +73,9 @@ void kernel_main(void) {
     // enable system interrupts
     enable_interrupts();
 
-    struct PathRoot* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
-    if (root_path) {}
+    struct DiskStream* stream = diskstreamer_new(0);
+    diskstreamer_seek(stream, 0x201);
+    unsigned char c = 0;
+    diskstreamer_read(stream, &c, 1);
+    while(1) {}
 }

@@ -14,6 +14,7 @@
 #include "disk/disk.h"
 #include "fs/pparser.h"
 #include "string/string.h"
+#include "disk/streamer.h"
 
 #define VGA_WIDTH       80
 #define VGA_HEIGHT      20
