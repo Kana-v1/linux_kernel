@@ -9,5 +9,6 @@
 #define EIO                 -1   // IO error
 #define EINVARG             -2   // input valid argument error
 #define ENOMEM              -3   // no memory
+#define EBADPATH            -4   // bad path
 
 #endif //LINUX_KERNEL_STATUS_H

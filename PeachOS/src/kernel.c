@@ -1,19 +1,11 @@
 //
 // Created by kana on 7/11/23.
 //
-#include <stdint.h>
-#include <stddef.h>
 #include "kernel.h"
-#include "io/io.h"
-#include "idt/idt.h"
-#include "memory/heap/kheap.h"
-#include "memory/paging/paging.h"
-#include "disk/disk.h"
 
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
 uint16_t terminal_col = 0;
-
 
 uint16_t terminal_make_char(char c, char colour) {
     return (colour << 8) | c;
@@ -49,15 +41,6 @@ void terminal_initialize(void) {
     }
 }
 
-size_t strlen(const char* str) {
-    size_t len = 0;
-    while (str[len]) {
-        len++;
-    }
-
-    return len;
-}
-
 void print(const char* str) {
     size_t len = strlen(str);
     for (int i = 0; i < len; i++) {
@@ -89,4 +72,7 @@ void kernel_main(void) {
 
     // enable system interrupts
     enable_interrupts();
+
+    struct PathRoot* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
+    if (root_path) {}
 }
