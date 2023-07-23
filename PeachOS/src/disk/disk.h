@@ -9,6 +9,7 @@
 #include "../io/io.h"
 #include "../memory/memory.h"
 #include "../config.h"
+#include "../fs/file.h"
 
 typedef unsigned int PEACHOS_DISK_TYPE;
 
@@ -18,6 +19,8 @@ typedef unsigned int PEACHOS_DISK_TYPE;
 struct Disk {
     PEACHOS_DISK_TYPE type;
     int sector_size;
+
+    struct Filesystem* filesystem;
 };
 
 void disk_search_and_init();
