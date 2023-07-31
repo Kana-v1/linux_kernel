@@ -3,6 +3,7 @@
 //
 
 #include "file.h"
+#include "fat/fat16.h"
 
 struct Filesystem* filesystems[PEACHOS_MAX_FILESYSTEMS];
 struct FileDescriptor* file_descriptors[PEACHOS_MAX_FILEDESCRIPTORS];
@@ -30,7 +31,7 @@ void fs_insert_filesystem(struct Filesystem* filesystem) {
 }
 
 static void fs_static_load() {
-//    fs_insert_filesystem(fat16_init());
+    fs_insert_filesystem(fat16_init());
 }
 
 void fs_load() {

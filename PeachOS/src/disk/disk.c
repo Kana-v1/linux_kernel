@@ -39,6 +39,7 @@ void disk_search_and_init() {
     disk.type = PEACH_OS_DISK_TYPE_REAL;
     disk.sector_size = PEACHOS_SECTOR_SIZE;
     disk.filesystem = fs_resolve(&disk);
+    disk.id = 0;
 }
 
 struct Disk* disk_get(int index) {

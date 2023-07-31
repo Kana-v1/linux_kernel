@@ -8,32 +8,32 @@ DATA_SEG equ gdt_data - gdt_start
 jmp short start
 nop
 
-; FAT16 header
-OEMIdentifier       db 'PEACHOS '   ; 8 bytes
-BytesPerSector      dw 0x200
-SectorsPerClaseter  db 0x80
-ReservedSectors     dw 200
-FATCopies           db 0x02
-RootDirEntries      dw 0x40
-NumSectors          dw 0x00
-MediaType           db 0xF8
-SectorsPerFat       dw 0x100
-SectorsPerTrack     dw 0x20
-NumberOfHeads       dw 0x40
-HiddenSectors       dd 0x00
-SectorsBig          dd 0x773594
+; FAT16 Header
+OEMIdentifier           db 'PEACHOS '
+BytesPerSector          dw 0x200
+SectorsPerCluster       db 0x80
+ReservedSectors         dw 200
+FATCopies               db 0x02
+RootDirEntries          dw 0x40
+NumSectors              dw 0x00
+MediaType               db 0xF8
+SectorsPerFat           dw 0x100
+SectorsPerTrack         dw 0x20
+NumberOfHeads           dw 0x40
+HiddenSectors           dd 0x00
+SectorsBig              dd 0x773594
 
-; extended BPB
-DriveNumber         db 0x80
-WinBTBin            db 0x00
-Signature           db 0x29
-VolumeID            dd 0xD105
-VolumeIDString      db 'PEACHOS BOO' ; 11 bytes
-SystemIDString      db 'FAT16   '   ; 8 bytes
+; Extended BPB (Dos 4.0)
+DriveNumber             db 0x80
+WinNTBit                db 0x00
+Signature               db 0x29
+VolumeID                dd 0xD105
+VolumeIDString          db 'PEACHOS BOO'
+SystemIDString          db 'FAT16   '
 
 
 start:
-    jmp 0: step2
+    jmp 0:step2
 
 step2:
     cli ; clear (disable) interrupts

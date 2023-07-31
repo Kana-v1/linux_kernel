@@ -10,5 +10,6 @@
 #define EINVARG             -2   // input valid argument error
 #define ENOMEM              -3   // no memory
 #define EBADPATH            -4   // bad path
+#define EFSNOTUS            -5   // not out filesystem
 
 #endif //LINUX_KERNEL_STATUS_H

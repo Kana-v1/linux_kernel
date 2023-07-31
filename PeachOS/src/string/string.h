@@ -15,4 +15,6 @@ bool is_digit(char c);
 
 int to_numeric_digit(char c);
 
+char* strcpy(char* dest, const char* src);
+
 #endif //LINUX_KERNEL_STRING_H

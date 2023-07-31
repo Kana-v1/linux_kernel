@@ -42,7 +42,7 @@ int diskstreamer_read(struct DiskStream* stream, void* out, int total) {
         res = diskstreamer_read(stream, out, total - PEACHOS_SECTOR_SIZE);
     }
 
-    return PEACHOS_ALL_OK;
+    return res;
 }
 
 void diskstreamer_close(struct DiskStream* stream) {

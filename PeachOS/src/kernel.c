@@ -57,6 +57,9 @@ void kernel_main(void) {
     // initialize the heap
     kheap_init();
 
+    // initialize file system
+    fs_init();
+
     // search and initialize the disks
     disk_search_and_init();
 
@@ -65,17 +68,14 @@ void kernel_main(void) {
 
     // setup paging
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
-    uint32_t* kernel_directory = paging_4gb_chunk_get_directory(kernel_chunk);
-    paging_switch(kernel_directory);
+    paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
 
     enable_paging();
 
     // enable system interrupts
     enable_interrupts();
 
-    struct DiskStream* stream = diskstreamer_new(0);
-    diskstreamer_seek(stream, 0x201);
-    unsigned char c = 0;
-    diskstreamer_read(stream, &c, 1);
-    while(1) {}
+    char buf[20];
+    strcpy(buf, "hello!");
+    while (1) {}
 }
