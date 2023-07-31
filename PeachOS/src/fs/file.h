@@ -50,7 +50,7 @@ struct FileDescriptor {
 
 void fs_init();
 
-int fopen(const char* filename, const char mode);
+int fopen(const char* filename, const char* mode_string);
 
 void fs_insert_filesystem(struct Filesystem* filesystem);
 

@@ -84,6 +84,62 @@ struct Filesystem* fs_resolve(struct Disk* disk) {
     return fs;
 }
 
-int fopen(const char* filename, const char mode) {
-    return EIO;
+FILE_MODE file_get_mode_by_string(const char* str) {
+    FILE_MODE mode = FILE_MODE_INVALID;
+
+    if (strncmp(str, "r", 1) == 0) {
+        mode = FILE_MODE_READ;
+    } else if (strncmp(str, "w", 1) == 0) {
+        mode = FILE_MODE_WRITE;
+    } else if (strncmp(str, "a", 1) == 0) {
+        mode = FILE_MODE_APPEND;
+    }
+
+    return mode;
+}
+
+int fopen(const char* filename, const char* mode_string) {
+    const int fopen_error = 0;
+    struct PathRoot* root_path = pathparser_parse(filename, NULL);
+    if (!root_path) {
+        return fopen_error;
+    }
+
+    // we have to have a full path (0:/text.txt, not 0:/)
+    if (!root_path->first) {
+        return fopen_error;
+    }
+
+    struct Disk* disk = disk_get(root_path->drive_no);
+    if (!disk) {
+        return fopen_error;
+    }
+
+    if (!disk->filesystem) {
+        return fopen_error;
+    }
+
+    FILE_MODE mode = file_get_mode_by_string(mode_string);
+    if (mode == FILE_MODE_INVALID) {
+        return fopen_error;
+    }
+
+    void* descriptor_private_data = disk->filesystem->open(disk, root_path->first, mode);
+
+    if (IS_ERROR(descriptor_private_data)) {
+        return ERROR_I(descriptor_private_data);
+    }
+
+    struct FileDescriptor* desc = 0;
+    int res = file_new_descriptor(&desc);
+    if (res < 0) {
+        return fopen_error;
+    }
+
+    desc->filesystem = disk->filesystem;
+    desc->private = descriptor_private_data;
+    desc->disk = disk;
+    res = desc->index;
+
+    return res;
 }
