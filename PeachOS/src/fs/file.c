@@ -6,7 +6,7 @@
 #include "fat/fat16.h"
 
 struct Filesystem* filesystems[PEACHOS_MAX_FILESYSTEMS];
-struct FileDescriptor* file_descriptors[PEACHOS_MAX_FILEDESCRIPTORS];
+struct FileDescriptor* file_descriptors[PEACHOS_MAX_FILE_DESCRIPTORS];
 
 static struct Filesystem** fs_get_free_filesystem() {
     for (int i = 0; i < PEACHOS_MAX_FILESYSTEMS; i++) {
@@ -46,7 +46,7 @@ void fs_init() {
 
 static int file_new_descriptor(struct FileDescriptor** descriptor_out) {
     int res = ENOMEM;
-    for (int i = 0; i < PEACHOS_MAX_FILEDESCRIPTORS; i++) {
+    for (int i = 0; i < PEACHOS_MAX_FILE_DESCRIPTORS; i++) {
         if (file_descriptors[i] == 0) {
             struct FileDescriptor* desc = kzalloc(sizeof(struct FileDescriptor));
             // descriptors start at 1
@@ -62,7 +62,7 @@ static int file_new_descriptor(struct FileDescriptor** descriptor_out) {
 }
 
 static struct FileDescriptor* file_get_descriptor(int fd_index) {
-    if (fd_index <= 0 || fd_index >= PEACHOS_MAX_FILEDESCRIPTORS) {
+    if (fd_index <= 0 || fd_index >= PEACHOS_MAX_FILE_DESCRIPTORS) {
         return 0;
     }
 
@@ -127,7 +127,8 @@ int fopen(const char* filename, const char* mode_string) {
     void* descriptor_private_data = disk->filesystem->open(disk, root_path->first, mode);
 
     if (IS_ERROR(descriptor_private_data)) {
-        return ERROR_I(descriptor_private_data);
+        return fopen_error;
+
     }
 
     struct FileDescriptor* desc = 0;

@@ -81,7 +81,7 @@ struct FatDirectory {
     struct FatDirectoryItem* item;
     int total;      // total number of items in the fat directory
     int sector_pos; // where the fat directory is
-    int end_sector; // the last sector of the where this directory is stored
+    int end_sector_pos; // the last sector of the where this directory is stored
 };
 
 struct FatItem {
@@ -93,7 +93,7 @@ struct FatItem {
     FAT_ITEM_TYPE type;
 };
 
-struct FatItemDescriptor {
+struct FatFileDescriptor {
     struct FatItem* item;
     uint32_t pos;
 };

@@ -8,12 +8,13 @@
 #include "../../kernel.h"
 #include "../memory.h"
 
+
 struct Heap kernel_heap;
 struct HeapTable kernel_heap_table;
 
 void kheap_init(void) {
-    int total_table_entries = PEACHOS_HEAP_SIZE_BYTES / PEACHOS_HEAP_BLOCK_SIZE_BYTES; // 25600 bytes
-    kernel_heap_table.entries = (HEAP_BLOCK_TABLE_ENTRY*) (PEACHOS_HEAP_TABLE_ADDESS);
+    int total_table_entries = PEACHOS_HEAP_SIZE_BYTES / PEACHOS_HEAP_BLOCK_SIZE; // 25600 bytes
+    kernel_heap_table.entries = (HEAP_BLOCK_TABLE_ENTRY*) (PEACHOS_HEAP_TABLE_ADDRESS);
     kernel_heap_table.total = total_table_entries;
 
     void* end = (void*) (PEACHOS_HEAP_ADDRESS + PEACHOS_HEAP_SIZE_BYTES);
@@ -35,6 +36,7 @@ void* kzalloc(size_t size) {
     }
 
     memset(ptr, 0x00, size);
+
     return ptr;
 }
 

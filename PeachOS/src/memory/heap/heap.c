@@ -5,14 +5,12 @@
 #include "heap.h"
 #include "../../kernel.h"
 #include <stdbool.h>
-#include "../../status.h"
-#include "../memory.h"
 
 static int heap_validate_table(void* start, void* end, struct HeapTable* table) {
     int res = PEACHOS_ALL_OK;
 
     size_t table_size = (size_t)(end - start);
-    size_t total_blocks = table_size / PEACHOS_HEAP_BLOCK_SIZE_BYTES;
+    size_t total_blocks = table_size / PEACHOS_HEAP_BLOCK_SIZE;
     if (table->total != total_blocks) {
         res = EINVARG;
     }
@@ -21,7 +19,7 @@ static int heap_validate_table(void* start, void* end, struct HeapTable* table) 
 }
 
 static bool heap_validate_alignment(void* ptr) {
-    return ((unsigned int) ptr % PEACHOS_HEAP_BLOCK_SIZE_BYTES) == 0;
+    return ((unsigned int) ptr % PEACHOS_HEAP_BLOCK_SIZE) == 0;
 }
 
 int heap_create(struct Heap* heap, void* start, void* end, struct HeapTable* table) {
@@ -32,7 +30,7 @@ int heap_create(struct Heap* heap, void* start, void* end, struct HeapTable* tab
         return res;
     }
 
-    memset(heap, 0, sizeof *heap);
+    memset(heap, 0, sizeof(struct Heap));
     heap->startAddr = start;
     heap->table = table;
 
@@ -48,12 +46,12 @@ int heap_create(struct Heap* heap, void* start, void* end, struct HeapTable* tab
 }
 
 static uint32_t heap_align_value_to_upper(uint32_t value) {
-    if (value % PEACHOS_HEAP_BLOCK_SIZE_BYTES == 0) {
+    if (value % PEACHOS_HEAP_BLOCK_SIZE == 0) {
         return value;
     }
 
-    value -= value % PEACHOS_HEAP_BLOCK_SIZE_BYTES;
-    value += PEACHOS_HEAP_BLOCK_SIZE_BYTES;
+    value -= value % PEACHOS_HEAP_BLOCK_SIZE;
+    value += PEACHOS_HEAP_BLOCK_SIZE;
 
     return value;
 }
@@ -92,7 +90,7 @@ int heap_get_start_block(struct Heap* heap, uint32_t total_blocks) {
 }
 
 void* heap_block_to_address(struct Heap* heap, uint32_t block) {
-    return heap->startAddr + block * PEACHOS_HEAP_BLOCK_SIZE_BYTES;
+    return heap->startAddr + block * PEACHOS_HEAP_BLOCK_SIZE;
 }
 
 void heap_mark_blocks_taken(struct Heap* heap, uint32_t start_block, uint32_t total_blocks) {
@@ -132,7 +130,7 @@ void* heap_malloc_blocks(struct Heap* heap, uint32_t total_blocks) {
 
 void heap_mark_blocks_free(struct Heap* heap, int starting_block) {
     struct HeapTable* table = heap->table;
-    for (int i = 0; i < (int) table->total; i++) {
+    for (int i = starting_block; i < (int) table->total; i++) {
         HEAP_BLOCK_TABLE_ENTRY entry = table->entries[i];
         table->entries[i] = HEAP_BLOCK_TABLE_ENTRY_FREE;
         if (!(entry & HEAP_BLOCK_HAS_NEXT)) {
@@ -142,12 +140,12 @@ void heap_mark_blocks_free(struct Heap* heap, int starting_block) {
 }
 
 int heap_address_to_block(struct Heap* heap, void* addr) {
-    return ((int) (addr - heap->startAddr)) / PEACHOS_HEAP_BLOCK_SIZE_BYTES;
+    return ((int) (addr - heap->startAddr)) / PEACHOS_HEAP_BLOCK_SIZE;
 }
 
 void* heap_malloc(struct Heap* heap, size_t size) {
     size_t aligned_size = heap_align_value_to_upper(size);
-    uint32_t total_blocks = aligned_size / PEACHOS_HEAP_BLOCK_SIZE_BYTES;
+    uint32_t total_blocks = aligned_size / PEACHOS_HEAP_BLOCK_SIZE;
 
     return heap_malloc_blocks(heap, total_blocks);
 }

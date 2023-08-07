@@ -11,5 +11,6 @@
 #define ENOMEM              -3   // no memory
 #define EBADPATH            -4   // bad path
 #define EFSNOTUS            -5   // not out filesystem
+#define ERDONLY             -6   // read only error
 
 #endif //LINUX_KERNEL_STATUS_H

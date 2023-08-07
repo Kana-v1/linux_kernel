@@ -1,7 +1,6 @@
 [BITS 32]
 
 global _start
-global problem
 extern kernel_main
 
 CODE_SEG equ 0x08

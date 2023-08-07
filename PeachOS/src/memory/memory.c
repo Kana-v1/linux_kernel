@@ -1,7 +1,3 @@
-//
-// Created by kana on 7/13/23.
-//
-
 #include "memory.h"
 
 void* memset(void* ptr, int c, size_t size) {
@@ -15,12 +11,20 @@ void* memset(void* ptr, int c, size_t size) {
 int memcmp(void* s1, void* s2, int count) {
     char* c1 = s1;
     char* c2 = s2;
-
     while (count-- > 0) {
         if (*c1++ != *c2++) {
-            return c1[count - 1] < c2[count - 1] ? -1 : 1;
+            return c1[-1] < c2[-1] ? -1 : 1;
         }
     }
 
     return 0;
+}
+
+void* memcpy(void* dest, void* src, int len) {
+    char* d = dest;
+    char* s = src;
+    while (len--) {
+        *d++ = *s++;
+    }
+    return dest;
 }
