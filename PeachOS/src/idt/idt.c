@@ -5,11 +5,23 @@
 #include "idt.h"
 #include "../config.h"
 #include "../memory/memory.h"
+#include "../io/io.h"
 
 struct idt_desc idt_descriptors[PEACHOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
 
 extern void idt_load(struct idtr_desc *ptr);
+extern void int21h(void);
+extern void no_interrupt(void);
+
+void int21h_handler(void) {
+    print("\nKeyboard pressed\n");
+    outb(0x20, 0x20);       // we're done handling this interrupt
+}
+
+void no_interrupt_handler(void) {
+    outb(0x20, 0x20);       // we're done handling this interrupt
+}
 
 void idt_zero(void) {
     print("Divide by zero error\n");
@@ -29,7 +41,13 @@ void idt_init(void) {
     idtr_descriptor.limit = sizeof(idt_descriptors) - 1;
     idtr_descriptor.base = (uint32_t) idt_descriptors;
 
+    for (int i = 0; i < PEACHOS_TOTAL_INTERRUPTS; i++) {
+        idt_set(i, no_interrupt);
+    }
+
     idt_set(0, idt_zero);
+    idt_set(0x21, int21h);
+
 
     // load the interrupt descriptor table
     idt_load(&idtr_descriptor);

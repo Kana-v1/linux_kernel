@@ -1,16 +1,11 @@
 //
 // Created by kana on 7/11/23.
 //
-#include <stdint.h>
-#include <stddef.h>
 #include "kernel.h"
-#include "io/io.h"
-#include "idt/idt.h"
 
-uint16_t *video_mem = 0;
-uint16_t terminal_row =0;
-uint16_t terminal_col =0;
-
+uint16_t* video_mem = 0;
+uint16_t terminal_row = 0;
+uint16_t terminal_col = 0;
 
 uint16_t terminal_make_char(char c, char colour) {
     return (colour << 8) | c;
@@ -46,15 +41,6 @@ void terminal_initialize(void) {
     }
 }
 
-size_t strlen(const char *str) {
-    size_t len = 0;
-    while (str[len]) {
-        len++;
-    }
-
-    return len;
-}
-
 void print(const char* str) {
     size_t len = strlen(str);
     for (int i = 0; i < len; i++) {
@@ -62,12 +48,37 @@ void print(const char* str) {
     }
 }
 
+static struct Paging4GbChunk* kernel_chunk = 0;
+
 void kernel_main(void) {
     terminal_initialize();
-    print("Hello world!\nSome test");
+    print("Hello world!\n");
+
+    // initialize the heap
+    kheap_init();
+
+    // initialize file system
+    fs_init();
+
+    // search and initialize the disks
+    disk_search_and_init();
 
     // initialize the interrupt descriptor table
     idt_init();
 
-    outb(0x60, 0xff);
+    // setup paging
+    kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
+
+    enable_paging();
+
+    // enable system interrupts
+    enable_interrupts();
+
+
+    int fd = fopen("0:/hello.txt", "r");
+    if (fd) {
+        print("We opened hello.txt\n");
+    }
+    while (1) {}
 }

@@ -32,7 +32,7 @@ outb:
     mov ebp, esp
 
     xor eax, eax        ; ensure it's 0
-    mov eax, [ebp + 82]
+    mov eax, [ebp + 12]
     mov edx, [ebp + 8]
     out dx, al
 
@@ -45,7 +45,7 @@ outw:
     mov ebp, esp
 
     xor eax, eax        ; ensure it's 0
-    mov eax, [ebp + 82]
+    mov eax, [ebp + 12]
     mov edx, [ebp + 8]
     out dx, ax
 
