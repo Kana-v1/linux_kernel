@@ -27,14 +27,15 @@ enum {
 struct Disk;
 struct PathPart;
 
-typedef void* (* FS_OPEN_FUNCTION)(struct Disk* disk, struct PathPart* path, FILE_MODE mode);
-
-typedef int (* FS_RESOLVE_FUNCTION)(struct Disk* disk);
+typedef void* (*FS_OPEN_FUNCTION)(struct Disk* disk, struct PathPart* path, FILE_MODE mode);
+typedef int (*FS_READ_FUNCTION)(struct Disk* disk, void* private, uint32_t size, uint32_t nmemb, char* out);
+typedef int (*FS_RESOLVE_FUNCTION)(struct Disk* disk);
 
 struct Filesystem {
     // filesystem should return 0 from resolve if the provider disk is using its filesystem
     FS_RESOLVE_FUNCTION resolve;
     FS_OPEN_FUNCTION open;
+	FS_READ_FUNCTION read;
 
     char name[20];
 };
@@ -51,6 +52,8 @@ struct FileDescriptor {
 void fs_init();
 
 int fopen(const char* filename, const char* mode_string);
+
+int fread(void* ptr, uint32_t size, uint32_t nmemb, int fd);
 
 void fs_insert_filesystem(struct Filesystem* filesystem);
 

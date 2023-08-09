@@ -31,8 +31,8 @@ void kernel_page();
 void kernel_registers();
 
 
-#define ERROR(value) (void*)(value)
-#define ERROR_I(value) (int)(value)
-#define IS_ERROR(value)     ((int)value) < 0
+#define ERROR(value) 	(void*)(value)
+#define ERROR_I(value)  (int)(value)
+#define IS_ERROR(value) ((int)value) < 0
 
 #endif //LINUX_KERNEL_KERNEL_H
