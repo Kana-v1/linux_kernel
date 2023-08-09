@@ -12,5 +12,6 @@
 #define EBADPATH            -4   // bad path
 #define EFSNOTUS            -5   // not out filesystem
 #define ERDONLY             -6   // read only error
+#define EUNIMP				-7	 // unimplemented
 
 #endif //LINUX_KERNEL_STATUS_H

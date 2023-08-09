@@ -7,11 +7,17 @@
 int fat16_resolve(struct Disk* disk);
 void* fat16_open(struct Disk* disk, struct PathPart* path, FILE_MODE mode);
 int fat16_read(struct Disk* disk, void* descriptor, uint32_t size, uint32_t nmemb, char* out_ptr);
+int fat16_seek(void* private, uint32_t offset, FILE_SEEK_MODE seek_mode);
+int fat16_stat(struct Disk* disk, void* private, struct FileStat* stat);
+int fat16_close(void* private);
 
 struct Filesystem fat16_fs = {
         .resolve = fat16_resolve,
         .open = fat16_open,
 		.read = fat16_read,
+		.seek = fat16_seek,
+		.stat = fat16_stat,
+		.close = fat16_close
 };
 
 struct Filesystem* fat16_init() {
@@ -454,4 +460,61 @@ int fat16_read(struct Disk* disk, void* descriptor, uint32_t size, uint32_t nmem
 
 	res = nmemb;
 	return res;
+}
+
+int fat16_seek(void* private, uint32_t offset, FILE_SEEK_MODE seek_mode) {
+	struct FatFileDescriptor* desc = private;
+	struct FatItem* desc_item = desc->item;
+	if (desc_item->type != FAT_ITEM_TYPE_FILE) {
+		return EINVARG;
+	}
+
+	struct FatDirectoryItem* ritem = desc_item->item;
+	if (offset >= ritem->filesize) {
+		return EIO;
+	}
+
+	switch(seek_mode) {
+	case SEEK_SET:
+		desc->pos = offset;
+		break;
+	case SEEK_END:
+		return EUNIMP;
+	case SEEK_CURRENT:
+		desc->pos += offset;
+		break;
+	default:
+		return EINVARG;
+	}
+
+	return PEACHOS_ALL_OK;
+}
+
+int fat16_stat(struct Disk* disk, void* private, struct FileStat* stat) {
+	struct FatFileDescriptor* desc = private;
+	struct FatItem* desc_item = desc->item;
+
+	if (desc->item->type != FAT_ITEM_TYPE_FILE) {
+		return EINVARG;
+	}
+
+	struct FatDirectoryItem* ritem = desc_item->item;
+	stat->file_size = ritem->filesize;
+	stat->flags = 0;
+
+	if (ritem->attribute & FAT_FILE_READ_ONLY) {
+		stat->flags |= FAT_FILE_READ_ONLY;
+	}
+
+	return PEACHOS_ALL_OK;
+}
+
+static void fat16_free_file_descriptor(struct FatFileDescriptor* desc) {
+	fat16_fat_item_free(desc->item);
+	kfree(desc);
+}
+
+int fat16_close(void* private) {
+	fat16_free_file_descriptor((struct FatFileDescriptor*) private);
+	return PEACHOS_ALL_OK;
 }

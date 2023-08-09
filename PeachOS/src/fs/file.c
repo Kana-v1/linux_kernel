@@ -23,8 +23,7 @@ void fs_insert_filesystem(struct Filesystem* filesystem) {
     fs = fs_get_free_filesystem();
 
     if (!fs) {
-        print("\nProblem inserting filesystem");
-        while (1) {} // panic is not implemented yet
+        panic("Problem inserting filesystem");
     }
 
     *fs = filesystem;
@@ -42,6 +41,11 @@ void fs_load() {
 void fs_init() {
     memset(file_descriptors, 0, sizeof(file_descriptors));
     fs_load();
+}
+
+static void file_free_descriptor(struct FileDescriptor* desc) {
+	file_descriptors[desc->index - 1] = 0x00;
+	kfree(desc);
 }
 
 static int file_new_descriptor(struct FileDescriptor** descriptor_out) {
@@ -145,6 +149,15 @@ int fopen(const char* filename, const char* mode_string) {
     return res;
 }
 
+int fseek(int fd, int offset, FILE_SEEK_MODE whence) {
+	struct FileDescriptor* desc = file_get_descriptor(fd);
+	if (!desc) {
+		return EIO;
+	}
+
+	return desc->filesystem->seek(desc->private, offset, whence);
+}
+
 int fread(void* ptr, uint32_t size, uint32_t nmemb, int fd) {
 	if (size == 0 || nmemb == 0 || fd < 1) {
 		return EINVARG;
@@ -156,4 +169,27 @@ int fread(void* ptr, uint32_t size, uint32_t nmemb, int fd) {
 	}
 
 	return desc->filesystem->read(desc->disk, desc->private, size, nmemb, (char*)ptr);
+}
+
+int fstat(int fd, struct FileStat* stat) {
+	struct FileDescriptor* desc = file_get_descriptor(fd);
+	if (!desc) {
+		return EIO;
+	}
+
+	return desc->filesystem->stat(desc->disk, desc->private, stat);
+}
+
+int fclose(int fd) {
+	struct FileDescriptor* desc = file_get_descriptor(fd);
+	if (!desc) {
+		return EIO;
+	}
+
+	int res = desc->filesystem->close(desc->private);
+	if (res == PEACHOS_ALL_OK) {
+		file_free_descriptor(desc);
+	}
+
+	return PEACHOS_ALL_OK;
 }
