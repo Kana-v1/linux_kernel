@@ -56,11 +56,15 @@ void panic(const char* msg) {
 	while(1){}
 }
 
+struct Tss tss;
 struct Gdt gdt_real[PEACHOS_TOTAL_GDT_SEGMENTS];
 struct GdtStructured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
-		{.base = 0x00, .limit = 0x00, .type = 0x00},				// NULL segment
-		{.base = 0x00, .limit = 0xFFFFFFFF, .type = 0x9A},			// Kernel code segment
-		{.base = 0x00, .limit = 0xFFFFFFFF, .type = 0x92},			// Kernel data segment
+		{.base = 0x00, .limit = 0x00, .type = 0x00},					// NULL segment
+		{.base = 0x00, .limit = 0xFFFFFFFF, .type = 0x9A},				// kernel code segment
+		{.base = 0x00, .limit = 0xFFFFFFFF, .type = 0x92},				// kernel data segment
+		{.base = 0x00, .limit = 0xFFFFFFFF, .type = 0xF8},				// user code segment
+		{.base = 0x00, .limit = 0xFFFFFFFF, .type = 0xF2},				// user data segment
+		{.base = (uint32_t)&tss, .limit = sizeof(tss), .type = 0xE9},	// tss segment
 };
 
 
@@ -86,7 +90,15 @@ void kernel_main(void) {
     // initialize the interrupt descriptor table
     idt_init();
 
-    // setup paging
+	// set up the tss
+	memset(&tss, 0x00, sizeof(tss));
+	tss.esp0 = 0x600000;
+	tss.ss0 = KERNEL_DATA_SELECTOR;
+
+	tss_load(0x28); // 0x28 - the offset in the gdt_real
+
+
+    // set up paging
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
 
