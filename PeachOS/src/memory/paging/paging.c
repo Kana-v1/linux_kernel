@@ -75,3 +75,14 @@ int paging_set(uint32_t *directory, void* virtual_address, uint32_t val) {
 
     return PEACHOS_ALL_OK;
 }
+
+void paging_free_4gb(struct Paging4GbChunk* chunk) {
+	for (int i = 0; i < 1024; i++) {
+		uint32_t entry = chunk->directory_entry[i];
+		uint32_t* table = (uint32_t*)(entry & 0xFFFF000); // last 3 bits are flags
+		kfree(table);
+	}
+
+	kfree(chunk->directory_entry);
+	kfree(chunk);
+}

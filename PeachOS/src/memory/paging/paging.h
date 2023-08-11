@@ -40,4 +40,6 @@ bool paging_is_aligned(void* addr);
 // val - physical address along with flags
 int paging_set(uint32_t* directory, void* virtual_address, uint32_t val);
 
+void paging_free_4gb(struct Paging4GbChunk* chunk);
+
 #endif //LINUX_KERNEL_PAGING_H
