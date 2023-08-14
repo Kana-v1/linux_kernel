@@ -28,6 +28,8 @@ struct Registers {
 	uint32_t ss;
 };
 
+struct Process;
+
 struct Task {
 	// the page directory of the task
 	struct Paging4GbChunk* page_directory;
@@ -38,11 +40,14 @@ struct Task {
 	// the next task in the linked list
 	struct Task* next;
 
+	// the process of the task
+	struct Process* process;
+
 	// the previous task in the linked list
 	struct Task* prev;
 };
 
-struct Task* task_new();
+struct Task* task_new(struct Process* process);
 struct Task* task_current();
 struct Task* task_get_next();
 int task_free(struct Task* task);

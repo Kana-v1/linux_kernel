@@ -97,6 +97,21 @@ char* strcpy(char* dest, const char* src) {
     return res;
 }
 
+char* strncpy(char* dest, const char* src, int n) {
+	int i = 0;
+	for (int i = 0; i < n - 1; i++) {
+		if (src[i] == 0x00) {
+			break;
+		}
+
+		dest[i] = src[i];
+	}
+
+	dest[i] = 0x00;
+
+	return dest;
+}
+
 bool is_digit(char c) {
     return c >= ascii0 && c <= ascii9;
 }

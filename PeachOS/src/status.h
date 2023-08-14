@@ -13,5 +13,6 @@
 #define EFSNOTUS            -5   // not out filesystem
 #define ERDONLY             -6   // read only error
 #define EUNIMP				-7	 // unimplemented
+#define EISTKN				-8	 // is taken
 
 #endif //LINUX_KERNEL_STATUS_H

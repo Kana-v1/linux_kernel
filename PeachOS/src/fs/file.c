@@ -132,7 +132,6 @@ int fopen(const char* filename, const char* mode_string) {
 
     if (IS_ERROR(descriptor_private_data)) {
         return fopen_error;
-
     }
 
     struct FileDescriptor* desc = 0;
