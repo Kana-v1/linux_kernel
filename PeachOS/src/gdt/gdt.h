@@ -14,7 +14,7 @@ struct Gdt {
 	uint8_t access;
 	uint8_t high_flags;
 	uint8_t base_24_31_bits;
-};
+} __attribute__((packed));
 
 struct GdtStructured {
 	uint32_t base;

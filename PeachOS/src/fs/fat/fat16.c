@@ -390,6 +390,7 @@ struct FatItem* fat16_find_item_in_dir(struct Disk* disk, struct FatDirectory* d
         fat16_get_full_relative_filename(&dir->item[i], tmp_filename, sizeof(tmp_filename));
         if (istrncmp(tmp_filename, name, sizeof(tmp_filename)) == 0) {
             f_item = fat16_new_fat_item_for_directory_item(disk, &dir->item[i]);
+			break;
         }
     }
 

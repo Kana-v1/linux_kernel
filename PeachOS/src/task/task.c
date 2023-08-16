@@ -33,6 +33,7 @@ struct Task* task_new(struct Process* process) {
 	if (task_head == 0)	{
 		task_head = task;
 		task_tail = task;
+		current_task = task;
 		goto out;
 	}
 
@@ -84,6 +85,27 @@ int task_free(struct Task* task){
 	return 0;
 }
 
+int task_page() {
+	user_registers();
+	task_switch(current_task);
+	return PEACHOS_ALL_OK;
+}
+
+int task_switch(struct Task* task) {
+	current_task = task;
+	paging_switch(task->page_directory->directory_entry);
+	return PEACHOS_ALL_OK;
+}
+
+void task_run_first_ever_task() {
+	if (!current_task) {
+		panic("task_run_first_ever_task(): no current task exists!\n");
+	}
+
+	task_switch(task_head);
+	task_return(&task_head->registers);
+}
+
 int task_init(struct Task* task, struct Process* process){
 	memset(task, 0, sizeof(struct Task));
 	// Map the entire 4GB address space to its self
@@ -95,6 +117,8 @@ int task_init(struct Task* task, struct Process* process){
 	task->registers.ip = PEACHOS_PROGRAM_VIRTUAL_ADDRESS;
 	task->registers.ss = USER_DATA_SEGMENT;
 	task->registers.esp = PEACHOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START;
+	task->registers.cs = USER_CODE_SEGMENT;
+
 	task->process = process;
 
 	return 0;

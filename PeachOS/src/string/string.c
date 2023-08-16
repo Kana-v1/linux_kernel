@@ -3,6 +3,7 @@
 //
 
 #include "string.h"
+#include "../kernel.h"
 
 const static int ascii0 = 48;
 const static int ascii9 = 57;
@@ -10,7 +11,7 @@ const static int ascii9 = 57;
 char to_lower(char s1) {
     int ascii_A = 65;
     int ascii_Z = 90;
-    if (s1 > ascii_A && s1 <= ascii_Z) {
+    if (s1 >= ascii_A && s1 <= ascii_Z) {
         s1 += 32;
     }
 
@@ -62,8 +63,9 @@ int istrncmp(const char* s1, const char* s2, int n) {
     {
         u1 = (unsigned char)*s1++;
         u2 = (unsigned char)*s2++;
-        if (u1 != u2 && to_lower(u1) != to_lower(u2))
+        if (u1 != u2 && to_lower(u1) != to_lower(u2)) {
             return u1 - u2;
+		}
         if (u1 == '\0')
             return 0;
     }

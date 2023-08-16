@@ -33,4 +33,6 @@ struct Process {
 
 int process_load_for_slot(const char* filename, struct Process** process, int process_slot);
 
+int process_load(const char* filename, struct Process** process);
+
 #endif //LINUX_KERNEL_PROCESS_H
